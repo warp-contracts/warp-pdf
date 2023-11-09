@@ -63,6 +63,7 @@ const Main: Component<MainProps> = (props) => {
       tags,
     });
 
+    console.log('Contract tx id', contractTxId);
     setLoading(false);
     setFile();
     await props.refetch();
@@ -91,7 +92,7 @@ const Main: Component<MainProps> = (props) => {
                 >
                   <Show
                     when={props.contracts && props.contracts.length > 0}
-                    fallback={<div class='main__list-wrapper__no-info'>No info about contracts.</div>}
+                    fallback={<div class='main__list-wrapper__no-info'>No info about pdfs.</div>}
                   >
                     <List data={props.contracts}></List>
                   </Show>

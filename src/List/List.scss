@@ -1,0 +1,29 @@
+.list {
+  &__link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &__row {
+    &--left {
+      text-align: left;
+    }
+  }
+
+  &__header {
+    &--left {
+      text-align: left;
+    }
+  }
+
+  tr,
+  th {
+    border-bottom: 1px solid #a9a9a9 !important;
+  }
+}
+
+.table-responsive {
+  overflow-x: scroll;
+  height: 200px;
+  max-height: 200px;
+}

@@ -70,5 +70,5 @@ export const getContracts = async (props: { walletAddress: string | null; contra
 };
 
 export const overflowId = (id: string) => {
-  return id.substr(0, 5) + '...' + id.substr(id.length - 5);
+  return id.substr(0, 10) + '...' + id.substr(id.length - 10);
 };

@@ -86,7 +86,7 @@ const Main: Component<MainProps> = (props) => {
         <>
           <DragNDrop handleClick={deployContract} loading={loading()} file={file} setFile={setFile}></DragNDrop>
           <Row>
-            <Col md={{ span: 6, offset: 3 }}>
+            <Col md={{ span: 8, offset: 2 }}>
               <Row class='main__list-wrapper justify-content-center'>
                 <span class='p-2'>PDFs</span>
                 <Show

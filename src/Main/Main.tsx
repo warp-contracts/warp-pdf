@@ -7,7 +7,6 @@ import { Tag, Warp } from 'warp-contracts';
 import { InjectedArweaveSigner, InjectedEthereumSigner } from 'warp-contracts-plugin-deploy';
 import List from '../List/List';
 import { providers } from 'ethers';
-// import { Buffer } from 'buffer';
 
 interface MainProps {
   handleModalOpen: () => void;
@@ -44,7 +43,6 @@ const Main: Component<MainProps> = (props) => {
       userSigner = new InjectedArweaveSigner(window.arweaveWallet);
     }
 
-    console.log(file());
     await userSigner.setPublicKey();
     const arrayBufferFile = await file().arrayBuffer();
     const { contractTxId } = await props.warp.deployFromSourceTx({

@@ -33,7 +33,9 @@ const List: ParentComponent<ListProps> = (props) => {
                   {overflowId(d.id)}
                 </a>
               </td>
-              <td class='list__row--left'>{d.name && overflowId(d.name)}</td>
+              <td class='list__row--left' data-toggle='tooltip' data-placement='top' title={d.name}>
+                {d.name && overflowId(d.name)}
+              </td>
               <td>
                 {new Date(Number(d.timestamp)).toLocaleDateString()}{' '}
                 {new Date(Number(d.timestamp)).toLocaleTimeString()}

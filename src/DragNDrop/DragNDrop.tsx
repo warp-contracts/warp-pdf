@@ -16,7 +16,6 @@ const DragNDrop: ParentComponent<DragNDropProps> = (props) => {
   const { setRef: dropzoneRef } = createDropzone({
     onDrop: async (files) => {
       if (files[0].file.type != 'application/pdf') {
-        console.log('test');
         return;
       } else {
         props.setFile(files[0].file);
@@ -49,7 +48,11 @@ const DragNDrop: ParentComponent<DragNDropProps> = (props) => {
         </div>
       </Col>
       <Col class='mt-3'>
-        <Button handleClick={props.handleClick} disabled={!props.file() || props.loading}>
+        <Button
+          handleClick={props.handleClick}
+          disabled={!props.file() || props.loading}
+          class={!props.file() ? 'invisible' : ''}
+        >
           Send
         </Button>
       </Col>

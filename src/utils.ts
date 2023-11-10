@@ -24,6 +24,7 @@ export const initializeWarp = () => {
 };
 
 export const getContracts = async (props: { walletAddress: string | null; contractNumber: number | null }) => {
+  console.log('wallet from getContracts', props.walletAddress);
   let result;
   result = (
     await getJsonResponse<ContractsByTag>(
@@ -37,7 +38,6 @@ export const getContracts = async (props: { walletAddress: string | null; contra
     return await new Promise((resolve) => {
       const interval = setInterval(async () => {
         if (result.length < props.contractNumber!!) {
-          console.log('fetching');
           result = (
             await getJsonResponse<ContractsByTag>(
               fetch(
@@ -60,7 +60,6 @@ export const getContracts = async (props: { walletAddress: string | null; contra
   const contracts = result
     .sort((a, b) => Number(b.synctimestamp) - Number(a.synctimestamp))
     .map((e, i) => {
-      console.log(e.synctimestamp);
       return {
         i: i + 1,
         id: e.contract,

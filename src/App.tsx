@@ -33,6 +33,7 @@ const App: Component = () => {
   );
 
   const connectMetamaskWallet = async () => {
+    setContractNumber(null);
     setLoadingWalletAddress(true);
     const provider = await detectEthereumProvider();
     if (provider) {
@@ -63,7 +64,7 @@ const App: Component = () => {
   };
 
   const handleAccountsChanged = async (accounts: any) => {
-    console.log(accounts);
+    setContractNumber(null);
     if (accounts.length === 0) {
       console.log('Please connect to MetaMask.');
     } else if (accounts[0] !== walletAddress()) {
@@ -73,12 +74,14 @@ const App: Component = () => {
   };
 
   const disconnect = () => {
+    setContractNumber(null);
     setWalletAddress('');
     localStorage.removeItem(ADDRESS_KEY);
     handleModalClose();
   };
 
   const connectArconnectWallet = async () => {
+    setContractNumber(null);
     if (!window.arweaveWallet) {
       handleModalClose();
       handleArconnectModalOpen();
@@ -97,7 +100,7 @@ const App: Component = () => {
     localStorage.setItem(ADDRESS_KEY, userAddress);
     setWalletProvider('arconnect');
     addEventListener('walletSwitch', (e) => {
-      console.log(e);
+      setContractNumber(null);
       const newAddress = e.detail.address;
       setWalletAddress(newAddress);
       localStorage.setItem(ADDRESS_KEY, newAddress);

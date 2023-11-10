@@ -10,6 +10,7 @@ import { utils } from 'ethers';
 import { getContracts, initializeWarp } from './utils';
 
 const ADDRESS_KEY = 'warp_pdf_address';
+const WALLET_PROVIDER = 'warp_pdf_provider';
 
 const App: Component = () => {
   const warp = initializeWarp();
@@ -25,7 +26,9 @@ const App: Component = () => {
   const handleArconnectModalClose = () => setArconnectModalOpen(false);
   const [loadingWalletAddress, setLoadingWalletAddress] = createSignal(false);
   const [walletAddress, setWalletAddress] = createSignal<string | null>(localStorage.getItem(ADDRESS_KEY) || null);
-  const [walletProvider, setWalletProvider] = createSignal<'metamask' | 'arconnect'>();
+  const [walletProvider, setWalletProvider] = createSignal<string | null>(
+    localStorage.getItem(WALLET_PROVIDER) || null
+  );
   const [contractNumber, setContractNumber] = createSignal<number | null>(null);
   const [data, { refetch }] = createResource(
     () => ({ walletAddress: walletAddress(), contractNumber: contractNumber() }),
@@ -52,6 +55,7 @@ const App: Component = () => {
       const address = utils.getAddress(accounts[0]);
       setWalletAddress(address);
       localStorage.setItem(ADDRESS_KEY, address);
+      localStorage.setItem(WALLET_PROVIDER, 'metamask');
       await window.ethereum.on('accountsChanged', handleAccountsChanged);
       handleModalClose();
       setLoadingWalletAddress(false);
@@ -69,6 +73,7 @@ const App: Component = () => {
       console.log('Please connect to MetaMask.');
     } else if (accounts[0] !== walletAddress()) {
       setWalletAddress(utils.getAddress(accounts[0]));
+      localStorage.setItem(WALLET_PROVIDER, 'metamask');
       localStorage.setItem(ADDRESS_KEY, utils.getAddress(accounts[0]));
     }
   };
@@ -76,6 +81,7 @@ const App: Component = () => {
   const disconnect = () => {
     setContractNumber(null);
     setWalletAddress('');
+    localStorage.removeItem(WALLET_PROVIDER);
     localStorage.removeItem(ADDRESS_KEY);
     handleModalClose();
   };
@@ -98,15 +104,18 @@ const App: Component = () => {
     const userAddress = await window.arweaveWallet.getActiveAddress();
     setWalletAddress(userAddress);
     localStorage.setItem(ADDRESS_KEY, userAddress);
+    localStorage.setItem(WALLET_PROVIDER, 'arweave');
     setWalletProvider('arconnect');
     addEventListener('walletSwitch', (e) => {
       setContractNumber(null);
       const newAddress = e.detail.address;
       setWalletAddress(newAddress);
+      localStorage.setItem(WALLET_PROVIDER, 'arweave');
       localStorage.setItem(ADDRESS_KEY, newAddress);
     });
     setModalOpen(false);
   };
+
   return (
     <Container fluid class='app p-4 d-flex flex-column'>
       <ActionModal open={arconnectModalOpen} handleClose={handleArconnectModalClose}>

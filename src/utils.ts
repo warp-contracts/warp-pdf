@@ -24,7 +24,6 @@ export const initializeWarp = () => {
 };
 
 export const getContracts = async (props: { walletAddress: string | null; contractNumber: number | null }) => {
-  console.log('wallet from getContracts', props.walletAddress);
   let result;
   result = (
     await getJsonResponse<ContractsByTag>(

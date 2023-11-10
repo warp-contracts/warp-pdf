@@ -23,8 +23,8 @@ export const initializeWarp = () => {
   return WarpFactory.forMainnet().use(new DeployPlugin());
 };
 
-export const getContracts = async (props: { walletAddress: string | null; contractNumber: number | null }) => {
-  let result;
+export const getContracts = async (props: { walletAddress: string | null; contractTxId: string | null }) => {
+  let result: any;
   result = (
     await getJsonResponse<ContractsByTag>(
       fetch(
@@ -36,7 +36,11 @@ export const getContracts = async (props: { walletAddress: string | null; contra
   async function waitUntil() {
     return await new Promise((resolve) => {
       const interval = setInterval(async () => {
-        if (result.length < props.contractNumber!!) {
+        if (
+          !result.some((r: any) => {
+            return r.contract == props.contractTxId;
+          })
+        ) {
           result = (
             await getJsonResponse<ContractsByTag>(
               fetch(
@@ -52,7 +56,7 @@ export const getContracts = async (props: { walletAddress: string | null; contra
     });
   }
 
-  if (props.contractNumber != null) {
+  if (props.contractTxId != null) {
     await waitUntil();
   }
 

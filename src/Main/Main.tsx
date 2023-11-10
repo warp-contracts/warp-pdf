@@ -17,7 +17,7 @@ interface MainProps {
   refetch: any;
   walletProvider: () => 'metamask' | 'arconnect' | undefined;
   loadingWalletAddress: () => boolean;
-  setContractNumber: (value: number) => void;
+  setContractTxId: (value: string) => void;
 }
 
 const Main: Component<MainProps> = (props) => {
@@ -68,7 +68,7 @@ const Main: Component<MainProps> = (props) => {
     console.log('Contract tx id', contractTxId);
     setLoading(false);
     setFile();
-    props.setContractNumber(props.contracts.length + 1);
+    props.setContractTxId(contractTxId);
     await props.refetch();
   };
   return (

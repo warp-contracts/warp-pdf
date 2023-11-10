@@ -29,14 +29,14 @@ const App: Component = () => {
   const [walletProvider, setWalletProvider] = createSignal<string | null>(
     localStorage.getItem(WALLET_PROVIDER) || null
   );
-  const [contractNumber, setContractNumber] = createSignal<number | null>(null);
+  const [contractTxId, setContractTxId] = createSignal<string | null>(null);
   const [data, { refetch }] = createResource(
-    () => ({ walletAddress: walletAddress(), contractNumber: contractNumber() }),
+    () => ({ walletAddress: walletAddress(), contractTxId: contractTxId() }),
     getContracts
   );
 
   const connectMetamaskWallet = async () => {
-    setContractNumber(null);
+    setContractTxId(null);
     setLoadingWalletAddress(true);
     const provider = await detectEthereumProvider();
     if (provider) {
@@ -68,7 +68,7 @@ const App: Component = () => {
   };
 
   const handleAccountsChanged = async (accounts: any) => {
-    setContractNumber(null);
+    setContractTxId(null);
     if (accounts.length === 0) {
       console.log('Please connect to MetaMask.');
     } else if (accounts[0] !== walletAddress()) {
@@ -79,7 +79,7 @@ const App: Component = () => {
   };
 
   const disconnect = () => {
-    setContractNumber(null);
+    setContractTxId(null);
     setWalletAddress('');
     localStorage.removeItem(WALLET_PROVIDER);
     localStorage.removeItem(ADDRESS_KEY);
@@ -87,7 +87,7 @@ const App: Component = () => {
   };
 
   const connectArconnectWallet = async () => {
-    setContractNumber(null);
+    setContractTxId(null);
     if (!window.arweaveWallet) {
       handleModalClose();
       handleArconnectModalOpen();
@@ -107,7 +107,7 @@ const App: Component = () => {
     localStorage.setItem(WALLET_PROVIDER, 'arweave');
     setWalletProvider('arconnect');
     addEventListener('walletSwitch', (e) => {
-      setContractNumber(null);
+      setContractTxId(null);
       const newAddress = e.detail.address;
       setWalletAddress(newAddress);
       localStorage.setItem(WALLET_PROVIDER, 'arweave');
@@ -150,7 +150,7 @@ const App: Component = () => {
         refetch={refetch}
         walletProvider={walletProvider}
         loadingWalletAddress={loadingWalletAddress}
-        setContractNumber={setContractNumber}
+        setContractTxId={setContractTxId}
       ></Main>
     </Container>
   );

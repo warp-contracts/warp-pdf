@@ -1,108 +1,76 @@
-import { providers } from 'ethers';
-import { arrayify, hashMessage, recoverPublicKey } from 'ethers/lib/utils';
-import { GQLResultInterface, GQLTransactionsResultInterface, Warp, WarpFactory, getJsonResponse } from 'warp-contracts';
+import { WarpFactory, getJsonResponse } from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
+
+interface ContractsByTag {
+  paging: {
+    total: number;
+    limit: number;
+    items: number;
+    page: number;
+    pages: number;
+  };
+  contracts: {
+    contract: string;
+    owner: string;
+    testnet: string;
+    contracttx: { tags: { name: string; value: string }[] };
+    synctimestamp: string;
+    total: string;
+  }[];
+}
 
 export const initializeWarp = () => {
   return WarpFactory.forMainnet().use(new DeployPlugin());
 };
 
-export const getContracts = async (walletAddress: string) => {
-  console.log(walletAddress);
-  const variables = {
-    tags: [
-      {
-        name: 'Application-Name',
-        values: 'Warp PDF',
-      },
-    ],
-    owners: [walletAddress],
-  };
-  const query = `query Transaction($tags: [TagFilter!]!, $owners: [String!]) {
-      transactions(tags: $tags, owners: $owners) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        node {
-          id
-          owner { address }
-          block {
-            timestamp
-          }
-          tags {
-            name
-            value
-          }
-        }
-        cursor
-      }
-      }
-    }`;
-
-  let result: GQLTransactionsResultInterface = (
-    await getJsonResponse<GQLResultInterface>(
-      fetch(`https://arweave.net/graphql`, {
-        method: 'POST',
-        body: createGqlQuery(query, variables),
-        headers: {
-          'Accept-Encoding': 'gzip, deflate, br',
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      })
-    )
-  ).data.transactions;
-  const edges = [...result.edges];
-  console.log(edges);
-
-  while (result.pageInfo.hasNextPage) {
-    const cursor = result.edges[100 - 1].cursor;
-
-    const newVariables = {
-      ...variables,
-      after: cursor,
-    };
-
-    result = (
-      await getJsonResponse<GQLResultInterface>(
-        fetch(`https://arweave.net/graphql`, {
-          method: 'POST',
-          body: createGqlQuery(query, newVariables),
-          headers: {
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-        })
+export const getContracts = async (props: { walletAddress: string | null; contractNumber: number | null }) => {
+  let result;
+  result = (
+    await getJsonResponse<ContractsByTag>(
+      fetch(
+        `https://gw.warp.cc/gateway/contracts-by-tag?owner=${props.walletAddress}&tag={"name":"Application-Name","value":"Warp PDF"}`
       )
-    ).data.transactions;
-    edges.push(...result.edges);
+    )
+  ).contracts;
+
+  async function waitUntil() {
+    return await new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        if (result.length < props.contractNumber!!) {
+          console.log('fetching');
+          result = (
+            await getJsonResponse<ContractsByTag>(
+              fetch(
+                `https://gw.warp.cc/gateway/contracts-by-tag?owner=${props.walletAddress}&tag={"name":"Application-Name","value":"Warp PDF"}`
+              )
+            )
+          ).contracts;
+        } else {
+          resolve('');
+          clearInterval(interval);
+        }
+      }, 2000);
+    });
   }
-  const contracts = edges
-    // .sort((a, b) => b.node.block.timestamp - a.node.block.timestamp)
+
+  if (props.contractNumber != null) {
+    await waitUntil();
+  }
+
+  const contracts = result
+    .sort((a, b) => Number(b.synctimestamp) - Number(a.synctimestamp))
     .map((e, i) => {
-      return { i: i + 1, id: e.node.id, name: e.node.tags.find((t) => t.name == 'Warp PDF Name')?.value };
+      console.log(e.synctimestamp);
+      return {
+        i: i + 1,
+        id: e.contract,
+        name: e.contracttx.tags.find((t) => t.name == 'Warp PDF Name')?.value,
+        timestamp: e.synctimestamp,
+      };
     });
   return contracts;
 };
 
-const createGqlQuery = (query: string, variables: { tags: { name: string; values: string }[]; cursor?: string }) => {
-  return JSON.stringify({ query, variables });
-};
-
 export const overflowId = (id: string) => {
   return id.substr(0, 5) + '...' + id.substr(id.length - 5);
-};
-
-export const getEthAddressForGql = async (warp: Warp) => {
-  const wallet = new providers.Web3Provider(window.ethereum).getSigner();
-  const text = 'Sign this message to connect to Warp PDF';
-  const signedMsg = await wallet.signMessage(text);
-  const hash = hashMessage(text);
-  const recoveredKey = recoverPublicKey(arrayify(hash), signedMsg);
-  const publicKey = Buffer.from(arrayify(recoveredKey));
-  console.log(publicKey.toString('base64'));
-  const addressGql = await warp.arweave.wallets.ownerToAddress(publicKey.toString('base64'));
-  return addressGql;
 };

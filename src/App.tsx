@@ -6,13 +6,10 @@ import './App.scss';
 import detectEthereumProvider from '@metamask/detect-provider';
 import ActionModal from './ActionModal/ActionModal';
 import ButtonWithIcon from './ButtonWithIcon/ButtonWithIcon';
-import { providers, utils } from 'ethers';
-import { getContracts, getEthAddressForGql, initializeWarp } from './utils';
-import { arrayify, hashMessage, recoverPublicKey } from 'ethers/lib/utils';
-import { InjectedEthereumSigner } from 'warp-contracts-plugin-deploy';
+import { utils } from 'ethers';
+import { getContracts, initializeWarp } from './utils';
 
 const ADDRESS_KEY = 'warp_pdf_address';
-const ADDRESS_GQL = 'warp_pdf_address_gql';
 
 const App: Component = () => {
   const warp = initializeWarp();
@@ -27,12 +24,14 @@ const App: Component = () => {
   const handleArconnectModalOpen = () => setArconnectModalOpen(true);
   const handleArconnectModalClose = () => setArconnectModalOpen(false);
   const [loadingWalletAddress, setLoadingWalletAddress] = createSignal(false);
-  const [walletAddress, setWalletAddress] = createSignal(localStorage.getItem(ADDRESS_KEY) || null);
-  const [walletAddressGql, setWalletAddressGql] = createSignal<string | null>(
-    localStorage.getItem(ADDRESS_GQL) || null
-  );
+  const [walletAddress, setWalletAddress] = createSignal<string | null>(localStorage.getItem(ADDRESS_KEY) || null);
   const [walletProvider, setWalletProvider] = createSignal<'metamask' | 'arconnect'>();
-  const [data, { refetch }] = createResource(walletAddressGql, getContracts);
+  const [contractNumber, setContractNumber] = createSignal<number | null>(null);
+  const [data, { refetch }] = createResource(
+    () => ({ walletAddress: walletAddress(), contractNumber: contractNumber() }),
+    getContracts
+  );
+
   const connectMetamaskWallet = async () => {
     setLoadingWalletAddress(true);
     const provider = await detectEthereumProvider();
@@ -51,10 +50,7 @@ const App: Component = () => {
       });
       const address = utils.getAddress(accounts[0]);
       setWalletAddress(address);
-      const addressGql = await getEthAddressForGql(warp);
-      setWalletAddressGql(addressGql);
       localStorage.setItem(ADDRESS_KEY, address);
-      localStorage.setItem(ADDRESS_GQL, addressGql);
       await window.ethereum.on('accountsChanged', handleAccountsChanged);
       handleModalClose();
       setLoadingWalletAddress(false);
@@ -71,20 +67,14 @@ const App: Component = () => {
     if (accounts.length === 0) {
       console.log('Please connect to MetaMask.');
     } else if (accounts[0] !== walletAddress()) {
-      (async () => {
-        const addressGql = await getEthAddressForGql(warp);
-        setWalletAddressGql(addressGql);
-        setWalletAddress(utils.getAddress(accounts[0]));
-        localStorage.setItem(ADDRESS_KEY, utils.getAddress(accounts[0]));
-        localStorage.setItem(ADDRESS_GQL, addressGql);
-      })();
+      setWalletAddress(utils.getAddress(accounts[0]));
+      localStorage.setItem(ADDRESS_KEY, utils.getAddress(accounts[0]));
     }
   };
 
   const disconnect = () => {
     setWalletAddress('');
     localStorage.removeItem(ADDRESS_KEY);
-    localStorage.removeItem(ADDRESS_GQL);
     handleModalClose();
   };
 
@@ -101,21 +91,16 @@ const App: Component = () => {
     }
     await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'ACCESS_PUBLIC_KEY'], {
       name: 'Warp PDF',
-      // logo: 'https://arweave.net/jAvd7Z1CBd8gVF2D6ESj7SMCCUYxDX_z3vpp5aHdaYk',
     });
     const userAddress = await window.arweaveWallet.getActiveAddress();
     setWalletAddress(userAddress);
-    setWalletAddressGql(userAddress);
     localStorage.setItem(ADDRESS_KEY, userAddress);
-    localStorage.setItem(ADDRESS_GQL, userAddress);
     setWalletProvider('arconnect');
     addEventListener('walletSwitch', (e) => {
       console.log(e);
       const newAddress = e.detail.address;
       setWalletAddress(newAddress);
-      setWalletAddressGql(newAddress);
       localStorage.setItem(ADDRESS_KEY, newAddress);
-      localStorage.setItem(ADDRESS_GQL, userAddress);
     });
     setModalOpen(false);
   };
@@ -153,6 +138,7 @@ const App: Component = () => {
         refetch={refetch}
         walletProvider={walletProvider}
         loadingWalletAddress={loadingWalletAddress}
+        setContractNumber={setContractNumber}
       ></Main>
     </Container>
   );

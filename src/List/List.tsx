@@ -15,6 +15,7 @@ const List: ParentComponent<ListProps> = (props) => {
           <th></th>
           <th class='list__header--left'>Id</th>
           <th class='list__header--left'>Name</th>
+          <th>Created</th>
           <th>Link</th>
         </tr>
       </thead>
@@ -33,6 +34,10 @@ const List: ParentComponent<ListProps> = (props) => {
                 </a>
               </td>
               <td class='list__row--left'>{d.name && overflowId(d.name)}</td>
+              <td>
+                {new Date(Number(d.timestamp)).toLocaleDateString()}{' '}
+                {new Date(Number(d.timestamp)).toLocaleTimeString()}
+              </td>
               <td>
                 <a href={`https://arweave.net/${d.id}`} class='list__link' target='__blank'>
                   <img src='/assets/pdf.svg' height={20} />

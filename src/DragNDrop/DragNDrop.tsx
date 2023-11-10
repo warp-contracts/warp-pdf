@@ -15,7 +15,12 @@ const DragNDrop: ParentComponent<DragNDropProps> = (props) => {
   const { selectFiles } = createFileUploader({ accept: 'application/pdf' });
   const { setRef: dropzoneRef } = createDropzone({
     onDrop: async (files) => {
-      props.setFile(files[0]);
+      if (files[0].file.type != 'application/pdf') {
+        console.log('test');
+        return;
+      } else {
+        props.setFile(files[0].file);
+      }
     },
   });
 

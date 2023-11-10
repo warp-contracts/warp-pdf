@@ -18,6 +18,7 @@ interface MainProps {
   refetch: any;
   walletProvider: () => 'metamask' | 'arconnect' | undefined;
   loadingWalletAddress: () => boolean;
+  setContractNumber: (value: number) => void;
 }
 
 const Main: Component<MainProps> = (props) => {
@@ -26,7 +27,6 @@ const Main: Component<MainProps> = (props) => {
   const deployContract = async () => {
     setLoading(true);
     const address = props.walletAddress() as string;
-    // const checksumAddress = utils.getAddress(address);
     const tags = [
       new Tag('Content-Type', 'application/pdf'),
       new Tag('Type', 'pdf'),
@@ -36,11 +36,15 @@ const Main: Component<MainProps> = (props) => {
       new Tag('Warp PDF Name', file().name),
     ];
 
-    const wallet = new providers.Web3Provider(window.ethereum);
-    const userSigner =
-      props.walletProvider() == 'metamask'
-        ? new InjectedEthereumSigner(wallet)
-        : new InjectedArweaveSigner(window.arweaveWallet);
+    let userSigner;
+    if (props.walletProvider() == 'metamask') {
+      const wallet = new providers.Web3Provider(window.ethereum);
+      userSigner = new InjectedEthereumSigner(wallet);
+    } else {
+      userSigner = new InjectedArweaveSigner(window.arweaveWallet);
+    }
+
+    console.log(file());
     await userSigner.setPublicKey();
     const arrayBufferFile = await file().arrayBuffer();
     const { contractTxId } = await props.warp.deployFromSourceTx({
@@ -66,6 +70,7 @@ const Main: Component<MainProps> = (props) => {
     console.log('Contract tx id', contractTxId);
     setLoading(false);
     setFile();
+    props.setContractNumber(props.contracts.length + 1);
     await props.refetch();
   };
   return (
@@ -85,7 +90,7 @@ const Main: Component<MainProps> = (props) => {
           <Row>
             <Col md={{ span: 6, offset: 3 }}>
               <Row class='main__list-wrapper justify-content-center'>
-                <span class='p-2'>Contracts</span>
+                <span class='p-2'>PDFs</span>
                 <Show
                   when={!props.contractsLoading && !props.loadingWalletAddress()}
                   fallback={<Row class='loader'></Row>}

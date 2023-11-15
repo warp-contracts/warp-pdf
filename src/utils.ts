@@ -26,14 +26,18 @@ export const initializeWarp = () => {
   return WarpFactory.forMainnet().use(new DeployPlugin());
 };
 
-export const getContractsByOwner = async (props: { walletAddress: string | null; contractTxId: string | null }) => {
+export const getContractsByOwner = async (props: {
+  walletAddress: string | null;
+  contractTxId: string | null;
+  srcTxId: string | null;
+}) => {
   let result: any;
   result = (
     await getJsonResponse<ContractsByTag>(
       fetch(
         `https://gw.warp.cc/gateway/contracts-by-tag?tag={"name":"Application-Name","value":"Warp PDF"}${
           props.walletAddress ? `&owner=${props.walletAddress}` : ''
-        }`
+        }${props.srcTxId ? `&srcId=${props.srcTxId}` : ''}`
       )
     )
   ).contracts;

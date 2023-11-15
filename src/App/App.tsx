@@ -7,11 +7,11 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 
 const App = () => {
-  const [walletAddress, setWalletAddress] = createSignal<string | null>(
-    localStorage.getItem(ADDRESS_KEY) || 'jnioZFibZSCcV8o-HkBXYPYEYNib4tqfexP0kCBXX_M'
-  );
+  // const [walletAddress, setWalletAddress] = createSignal<string | null>(
+  //   localStorage.getItem(ADDRESS_KEY) || 'jnioZFibZSCcV8o-HkBXYPYEYNib4tqfexP0kCBXX_M'
+  // );
   const [data, { refetch }] = createResource(
-    () => ({ walletAddress: walletAddress(), contractTxId: null }),
+    () => ({ walletAddress: null, contractTxId: null, srcTxId: 'HzBCFeoei50hjdlEq2X0q0X5qdMHNozXaCkNZfHRI1M' }),
     getContractsByOwner
   );
 

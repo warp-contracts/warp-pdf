@@ -22,7 +22,11 @@ const Admin: Component = () => {
   );
   const [contractTxId, setContractTxId] = createSignal<string | null>(null);
   const [data, { refetch }] = createResource(
-    () => ({ walletAddress: walletAddress(), contractTxId: contractTxId() }),
+    () => ({
+      walletAddress: walletAddress(),
+      contractTxId: contractTxId(),
+      srcTxId: 'HzBCFeoei50hjdlEq2X0q0X5qdMHNozXaCkNZfHRI1M',
+    }),
     getContractsByOwner
   );
 

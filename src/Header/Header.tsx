@@ -4,18 +4,22 @@ import Button from '../Button/Button';
 import { overflowId } from '../utils';
 
 interface HeaderProps {
-  handleModalOpen: () => void;
-  walletAddress: () => string | null;
+  handleModalOpen?: () => void;
+  walletAddress?: () => string | null | undefined;
 }
 
 const Header: Component<HeaderProps> = (props) => {
   return (
     <Row>
       <Col class='d-flex justify-content-between'>
-        <img height={50} src='/assets/logo.svg' />
-        <Button handleClick={props.handleModalOpen}>
-          {props.walletAddress() ? overflowId(props.walletAddress() as string) : 'Connect'}
-        </Button>
+        <a href='/'>
+          <img height={50} src='/assets/ondo-wordmark.svg' />
+        </a>
+        {props.handleModalOpen && props.walletAddress && (
+          <Button handleClick={props.handleModalOpen}>
+            {props.walletAddress() ? overflowId(props.walletAddress() as string, 4) : 'Connect'}
+          </Button>
+        )}
       </Col>
     </Row>
   );

@@ -18,6 +18,9 @@ interface MainProps {
   walletProvider: () => 'metamask' | 'arconnect' | undefined;
   loadingWalletAddress: () => boolean;
   setContractTxId: (value: string) => void;
+  handleArconnectModalOpen: () => void;
+  connectArconnectWallet: () => void;
+  connectMetamaskWallet: () => void;
 }
 
 const Main: Component<MainProps> = (props) => {
@@ -38,15 +41,34 @@ const Main: Component<MainProps> = (props) => {
     let userSigner;
     if (props.walletProvider() == 'metamask') {
       const wallet = new providers.Web3Provider(window.ethereum);
-      userSigner = new InjectedEthereumSigner(wallet);
+      console.log(wallet);
+      try {
+        userSigner = new InjectedEthereumSigner(wallet);
+        await userSigner.setPublicKey();
+      } catch (e) {
+        console.log(e);
+        await props.connectMetamaskWallet();
+        userSigner = new InjectedEthereumSigner(wallet);
+        await userSigner.setPublicKey();
+      }
     } else {
-      userSigner = new InjectedArweaveSigner(window.arweaveWallet);
+      if (!window.arweaveWallet) {
+        props.handleArconnectModalOpen();
+        return;
+      }
+      try {
+        userSigner = new InjectedArweaveSigner(window.arweaveWallet);
+        await userSigner.setPublicKey();
+      } catch (e) {
+        await props.connectArconnectWallet();
+        userSigner = new InjectedArweaveSigner(window.arweaveWallet);
+        await userSigner.setPublicKey();
+      }
     }
 
-    await userSigner.setPublicKey();
     const arrayBufferFile = await file().arrayBuffer();
     const { contractTxId } = await props.warp.deployFromSourceTx({
-      srcTxId: 'Of9pi--Gj7hCTawhgxOwbuWnFI1h24TTgO5pw8ENJNQ',
+      srcTxId: 'HzBCFeoei50hjdlEq2X0q0X5qdMHNozXaCkNZfHRI1M',
       initState: JSON.stringify({
         balances: {
           [address]: 1000000,
@@ -72,7 +94,7 @@ const Main: Component<MainProps> = (props) => {
     await props.refetch();
   };
   return (
-    <Row class='justify-content-center flex-column main flex-grow-1 align-middle'>
+    <Row class='justify-content-center flex-column main flex-grow-1 align-middle mt-4'>
       {!props.walletAddress() ? (
         <>
           <Col class='d-flex justify-content-center align-items-end'>
@@ -85,10 +107,10 @@ const Main: Component<MainProps> = (props) => {
       ) : (
         <>
           <DragNDrop handleClick={deployContract} loading={loading()} file={file} setFile={setFile}></DragNDrop>
-          <Row>
+          <Row class='flex-grow-1'>
             <Col md={{ span: 8, offset: 2 }}>
               <Row class='main__list-wrapper justify-content-center'>
-                <span class='p-2'>PDFs</span>
+                <span class='p-2'>Documents</span>
                 <Show
                   when={!props.contractsLoading && !props.loadingWalletAddress()}
                   fallback={<Row class='loader'></Row>}

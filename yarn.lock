@@ -1329,6 +1329,11 @@
   resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.2.1.tgz#320fb2180743031622b40fc43b0e63bf55686cfb"
   integrity sha512-TsecNzxiO5bLfzqb4OOuzfUmdOROcssuGqgh5rXMMaasoFZ3GoveUgdY1wcf17frMJM7kCNGNuK34EjErneZkg==
 
+"@solidjs/router@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@solidjs/router/-/router-0.9.1.tgz#d7ec28be68c67a32d16b6578cb63e70eb4d1415c"
+  integrity sha512-kRY75piOQsyoH75E/RP6lr7uVGFCjeeCCCJx7Z2D1Vc6+I1yFQjLCvE+6agXGwqDoWi6vbETP1g7gmp/L1mNLg==
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -5477,10 +5482,8 @@ warp-arbundles@^1.0.4:
     buffer "^6.0.3"
     warp-isomorphic "^1.0.7"
 
-warp-contracts-plugin-deploy@^1.0.10:
+"warp-contracts-plugin-deploy@file:.yalc/warp-contracts-plugin-deploy":
   version "1.0.10"
-  resolved "https://registry.yarnpkg.com/warp-contracts-plugin-deploy/-/warp-contracts-plugin-deploy-1.0.10.tgz#be9dcd671f5dd7f0a740ca4089137b98474adb45"
-  integrity sha512-916pigGlggJZVIWTGgxx0gEoFG6/FWQuitkXaLcJtO4QAzwPiZIwF30mDZh6UtZz0vNSrn8VAsnboW+QsdKZYA==
   dependencies:
     arbundles "^0.10.0"
     arlocal "^1.1.59"

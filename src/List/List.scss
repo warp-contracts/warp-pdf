@@ -1,18 +1,26 @@
 .list {
   &__link {
     text-decoration: none;
-    color: inherit;
+    color: #5475fb;
   }
 
   &__row {
     &--left {
       text-align: left;
     }
+
+    &--right {
+      text-align: right;
+    }
   }
 
   &__header {
     &--left {
       text-align: left;
+    }
+
+    &--right {
+      text-align: right;
     }
   }
 

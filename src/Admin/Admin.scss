@@ -1,7 +1,14 @@
-.app {
+.admin {
   text-align: center;
   background-image: url('/assets/white-background.avif');
   min-height: 100vh;
+
+  &__main {
+    &__wrapper {
+      margin-right: 0 !important;
+      margin-left: 0 !important;
+    }
+  }
 }
 
 .loader {

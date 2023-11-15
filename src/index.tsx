@@ -2,8 +2,10 @@
 import { render } from 'solid-js/web';
 
 import './index.scss';
-import App from './App';
 import { Buffer } from 'buffer';
+import { Router, Routes, Route } from '@solidjs/router';
+import Admin from './Admin/Admin';
+import App from './App/App';
 
 globalThis.Buffer = Buffer;
 
@@ -15,4 +17,14 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <App />, root!);
+render(
+  () => (
+    <Router>
+      <Routes>
+        <Route path='/admin' component={Admin} />
+        <Route path='/' component={App} />
+      </Routes>
+    </Router>
+  ),
+  root!
+);

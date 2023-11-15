@@ -20,6 +20,7 @@
   "dependencies": {
     "@metamask/detect-provider": "^2.0.0",
     "@solid-primitives/upload": "^0.0.114",
+    "@solidjs/router": "^0.9.1",
     "ethers": "5.7.0",
     "solid-bootstrap": "^1.0.19",
     "solid-js": "^1.7.6",

@@ -1,29 +1,20 @@
 import { createSignal, type Component, createResource } from 'solid-js';
-import Header from './Header/Header';
-import Main from './Main/Main';
-import { Container } from 'solid-bootstrap';
-import './App.scss';
+import Header from '../Header/Header';
+import Main from '../Main/Main';
+import { Container, Row } from 'solid-bootstrap';
+import './Admin.scss';
 import detectEthereumProvider from '@metamask/detect-provider';
-import ActionModal from './ActionModal/ActionModal';
-import ButtonWithIcon from './ButtonWithIcon/ButtonWithIcon';
+import ActionModal from '../ActionModal/ActionModal';
+import ButtonWithIcon from '../ButtonWithIcon/ButtonWithIcon';
 import { utils } from 'ethers';
-import { getContracts, initializeWarp } from './utils';
+import { ADDRESS_KEY, WALLET_PROVIDER, getContractsByOwner, initializeWarp } from '../utils';
+import Footer from '../Footer/Footer';
 
-const ADDRESS_KEY = 'warp_pdf_address';
-const WALLET_PROVIDER = 'warp_pdf_provider';
-
-const App: Component = () => {
+const Admin: Component = () => {
   const warp = initializeWarp();
 
   const [modalOpen, setModalOpen] = createSignal(false);
-  const handleModalOpen = () => setModalOpen(true);
-  const handleModalClose = () => setModalOpen(false);
-  const [metamaskModalOpen, setMetamaskModalOpen] = createSignal(false);
-  const handleMetamasModalOpen = () => setMetamaskModalOpen(true);
-  const handleMetamasModalClose = () => setMetamaskModalOpen(false);
-  const [arconnectModalOpen, setArconnectModalOpen] = createSignal(false);
-  const handleArconnectModalOpen = () => setArconnectModalOpen(true);
-  const handleArconnectModalClose = () => setArconnectModalOpen(false);
+  const [errorModalOpen, setErrorModalOpen] = createSignal('');
   const [loadingWalletAddress, setLoadingWalletAddress] = createSignal(false);
   const [walletAddress, setWalletAddress] = createSignal<string | null>(localStorage.getItem(ADDRESS_KEY) || null);
   const [walletProvider, setWalletProvider] = createSignal<string | null>(
@@ -32,7 +23,7 @@ const App: Component = () => {
   const [contractTxId, setContractTxId] = createSignal<string | null>(null);
   const [data, { refetch }] = createResource(
     () => ({ walletAddress: walletAddress(), contractTxId: contractTxId() }),
-    getContracts
+    getContractsByOwner
   );
 
   const connectMetamaskWallet = async () => {
@@ -42,13 +33,13 @@ const App: Component = () => {
     if (provider) {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }).catch((err: any) => {
         if (err.code === 4001) {
-          handleModalOpen();
+          setModalOpen(true);
           setLoadingWalletAddress(false);
           return;
         } else {
           console.error(err);
-          handleModalClose();
-          handleMetamasModalOpen();
+          setModalOpen(false);
+          setErrorModalOpen('Please connect to Metamask.');
           setLoadingWalletAddress(false);
         }
       });
@@ -57,12 +48,12 @@ const App: Component = () => {
       localStorage.setItem(ADDRESS_KEY, address);
       localStorage.setItem(WALLET_PROVIDER, 'metamask');
       await window.ethereum.on('accountsChanged', handleAccountsChanged);
-      handleModalClose();
+      setModalOpen(false);
       setLoadingWalletAddress(false);
       setWalletProvider('metamask');
     } else {
-      handleMetamasModalOpen();
-      handleModalClose();
+      setErrorModalOpen('Please connect to Metamask.');
+      setModalOpen(false);
       setLoadingWalletAddress(false);
     }
   };
@@ -70,7 +61,7 @@ const App: Component = () => {
   const handleAccountsChanged = async (accounts: any) => {
     setContractTxId(null);
     if (accounts.length === 0) {
-      console.log('Please connect to MetaMask.');
+      setErrorModalOpen('Please connect to Metamask.');
     } else if (accounts[0] !== walletAddress()) {
       setWalletAddress(utils.getAddress(accounts[0]));
       localStorage.setItem(WALLET_PROVIDER, 'metamask');
@@ -83,19 +74,19 @@ const App: Component = () => {
     setWalletAddress('');
     localStorage.removeItem(WALLET_PROVIDER);
     localStorage.removeItem(ADDRESS_KEY);
-    handleModalClose();
+    setModalOpen(false);
   };
 
   const connectArconnectWallet = async () => {
     setContractTxId(null);
     if (!window.arweaveWallet) {
-      handleModalClose();
-      handleArconnectModalOpen();
+      setModalOpen(false);
+      setErrorModalOpen('Please connect to Arconnect.');
       return;
     }
     if (!window.arweaveWallet.connect) {
-      handleModalClose();
-      handleArconnectModalOpen();
+      setModalOpen(false);
+      setErrorModalOpen('Please connect to Arconnect.');
       return;
     }
     await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'ACCESS_PUBLIC_KEY'], {
@@ -117,16 +108,13 @@ const App: Component = () => {
   };
 
   return (
-    <Container fluid class='app p-4 d-flex flex-column'>
-      <ActionModal open={arconnectModalOpen} handleClose={handleArconnectModalClose}>
-        Please connect to Arconnect!
-      </ActionModal>
-      <ActionModal open={metamaskModalOpen} handleClose={handleMetamasModalClose}>
-        Please connect to Metamask!
+    <Container fluid class='admin p-4 d-flex flex-column'>
+      <ActionModal open={errorModalOpen() ? () => true : () => false} handleClose={() => setErrorModalOpen('')}>
+        {errorModalOpen()}
       </ActionModal>
       <ActionModal
         open={modalOpen}
-        handleClose={handleModalClose}
+        handleClose={() => setModalOpen(false)}
         additionalButton={walletAddress() && 'Disconnect'}
         handleAdditionalButton={disconnect}
       >
@@ -140,20 +128,30 @@ const App: Component = () => {
           <span>Metamask</span>
         </ButtonWithIcon>
       </ActionModal>
-      <Header handleModalOpen={handleModalOpen} walletAddress={walletAddress}></Header>
-      <Main
-        handleModalOpen={handleModalOpen}
-        walletAddress={walletAddress}
-        warp={warp}
-        contracts={data()}
-        contractsLoading={data.loading}
-        refetch={refetch}
-        walletProvider={walletProvider}
-        loadingWalletAddress={loadingWalletAddress}
-        setContractTxId={setContractTxId}
-      ></Main>
+      <Row>
+        <Header handleModalOpen={() => setModalOpen(true)} walletAddress={walletAddress}></Header>
+      </Row>
+      <Row class='admin__main__wrapper'>
+        <Main
+          handleModalOpen={() => setModalOpen(true)}
+          walletAddress={walletAddress}
+          warp={warp}
+          contracts={data()}
+          contractsLoading={data.loading}
+          refetch={refetch}
+          walletProvider={walletProvider}
+          loadingWalletAddress={loadingWalletAddress}
+          setContractTxId={setContractTxId}
+          handleArconnectModalOpen={() => setErrorModalOpen('Please connect to Arconnect.')}
+          connectArconnectWallet={connectArconnectWallet}
+          connectMetamaskWallet={connectMetamaskWallet}
+        ></Main>
+      </Row>
+      <Row>
+        <Footer />
+      </Row>
     </Container>
   );
 };
 
-export default App;
+export default Admin;

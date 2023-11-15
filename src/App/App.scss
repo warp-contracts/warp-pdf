@@ -1,0 +1,28 @@
+.app {
+  text-align: center;
+  background-image: url('/assets/white-background.avif');
+  min-height: 100vh;
+  position: relative;
+
+  .table-responsive {
+    height: calc(100vh - 270px) !important;
+    max-height: none;
+  }
+
+  &__list-wrapper {
+    margin-top: 1.5rem;
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    padding: 1rem;
+    position: relative;
+    height: calc(100vh - 270px + 80px) !important;
+    &__no-info,
+    &__loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}

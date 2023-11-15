@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "warp-contracts-plugin-deploy": {
+      "signature": "9f39890ad9bf6279f11cfdf160f9c13a",
+      "file": true,
+      "replaced": "^1.0.10"
+    }
+  }
+}

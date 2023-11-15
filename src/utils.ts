@@ -19,16 +19,21 @@ interface ContractsByTag {
   }[];
 }
 
+export const ADDRESS_KEY = 'warp_pdf_address';
+export const WALLET_PROVIDER = 'warp_pdf_provider';
+
 export const initializeWarp = () => {
   return WarpFactory.forMainnet().use(new DeployPlugin());
 };
 
-export const getContracts = async (props: { walletAddress: string | null; contractTxId: string | null }) => {
+export const getContractsByOwner = async (props: { walletAddress: string | null; contractTxId: string | null }) => {
   let result: any;
   result = (
     await getJsonResponse<ContractsByTag>(
       fetch(
-        `https://gw.warp.cc/gateway/contracts-by-tag?owner=${props.walletAddress}&tag={"name":"Application-Name","value":"Warp PDF"}`
+        `https://gw.warp.cc/gateway/contracts-by-tag?tag={"name":"Application-Name","value":"Warp PDF"}${
+          props.walletAddress ? `&owner=${props.walletAddress}` : ''
+        }`
       )
     )
   ).contracts;
@@ -70,9 +75,15 @@ export const getContracts = async (props: { walletAddress: string | null; contra
         timestamp: e.synctimestamp,
       };
     });
+
+  console.log(contracts);
   return contracts;
 };
 
-export const overflowId = (id: string) => {
-  return id.substr(0, 10) + '...' + id.substr(id.length - 10);
+export const overflowId = (id: string, charToLeave: number) => {
+  if (id.length < charToLeave * 2 + 3) {
+    return id;
+  } else {
+    return id.substr(0, charToLeave) + '...' + id.substr(id.length - charToLeave);
+  }
 };

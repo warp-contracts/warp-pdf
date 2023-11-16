@@ -12,8 +12,7 @@ import Footer from '../Footer/Footer';
 
 const Admin: Component = () => {
   const warp = initializeWarp();
-
-  const [modalOpen, setModalOpen] = createSignal(false);
+  const [walletModalOpen, setWalletModalOpen] = createSignal(false);
   const [errorModalOpen, setErrorModalOpen] = createSignal('');
   const [loadingWalletAddress, setLoadingWalletAddress] = createSignal(false);
   const [walletAddress, setWalletAddress] = createSignal<string | null>(localStorage.getItem(ADDRESS_KEY) || null);
@@ -30,6 +29,14 @@ const Admin: Component = () => {
     getContractsByOwner
   );
 
+  const handleArconnectModalOpen = () => {
+    setErrorModalOpen('Please connect to Arconnect.');
+  };
+
+  const handleMetamaskModalOpen = () => {
+    setErrorModalOpen('Please connect to Metamask.');
+  };
+
   const connectMetamaskWallet = async () => {
     setContractTxId(null);
     setLoadingWalletAddress(true);
@@ -37,13 +44,13 @@ const Admin: Component = () => {
     if (provider) {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }).catch((err: any) => {
         if (err.code === 4001) {
-          setModalOpen(true);
+          setWalletModalOpen(true);
           setLoadingWalletAddress(false);
           return;
         } else {
           console.error(err);
-          setModalOpen(false);
-          setErrorModalOpen('Please connect to Metamask.');
+          setWalletModalOpen(false);
+          handleMetamaskModalOpen();
           setLoadingWalletAddress(false);
         }
       });
@@ -52,12 +59,12 @@ const Admin: Component = () => {
       localStorage.setItem(ADDRESS_KEY, address);
       localStorage.setItem(WALLET_PROVIDER, 'metamask');
       await window.ethereum.on('accountsChanged', handleAccountsChanged);
-      setModalOpen(false);
+      setWalletModalOpen(false);
       setLoadingWalletAddress(false);
       setWalletProvider('metamask');
     } else {
-      setErrorModalOpen('Please connect to Metamask.');
-      setModalOpen(false);
+      handleMetamaskModalOpen();
+      setWalletModalOpen(false);
       setLoadingWalletAddress(false);
     }
   };
@@ -78,19 +85,19 @@ const Admin: Component = () => {
     setWalletAddress('');
     localStorage.removeItem(WALLET_PROVIDER);
     localStorage.removeItem(ADDRESS_KEY);
-    setModalOpen(false);
+    setWalletModalOpen(false);
   };
 
   const connectArconnectWallet = async () => {
     setContractTxId(null);
     if (!window.arweaveWallet) {
-      setModalOpen(false);
-      setErrorModalOpen('Please connect to Arconnect.');
+      setWalletModalOpen(false);
+      handleArconnectModalOpen();
       return;
     }
     if (!window.arweaveWallet.connect) {
-      setModalOpen(false);
-      setErrorModalOpen('Please connect to Arconnect.');
+      setWalletModalOpen(false);
+      handleArconnectModalOpen();
       return;
     }
     await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION', 'ACCESS_PUBLIC_KEY'], {
@@ -108,7 +115,7 @@ const Admin: Component = () => {
       localStorage.setItem(WALLET_PROVIDER, 'arweave');
       localStorage.setItem(ADDRESS_KEY, newAddress);
     });
-    setModalOpen(false);
+    setWalletModalOpen(false);
   };
 
   return (
@@ -117,8 +124,8 @@ const Admin: Component = () => {
         {errorModalOpen()}
       </ActionModal>
       <ActionModal
-        open={modalOpen}
-        handleClose={() => setModalOpen(false)}
+        open={walletModalOpen}
+        handleClose={() => setWalletModalOpen(false)}
         additionalButton={walletAddress() && 'Disconnect'}
         handleAdditionalButton={disconnect}
       >
@@ -133,11 +140,11 @@ const Admin: Component = () => {
         </ButtonWithIcon>
       </ActionModal>
       <Row>
-        <Header handleModalOpen={() => setModalOpen(true)} walletAddress={walletAddress}></Header>
+        <Header handleModalOpen={() => setWalletModalOpen(true)} walletAddress={walletAddress}></Header>
       </Row>
-      <Row class='admin__main__wrapper'>
+      <Row class='admin__main__wrapper flex-grow-1'>
         <Main
-          handleModalOpen={() => setModalOpen(true)}
+          handleModalOpen={() => setWalletModalOpen(true)}
           walletAddress={walletAddress}
           warp={warp}
           contracts={data()}
@@ -146,7 +153,6 @@ const Admin: Component = () => {
           walletProvider={walletProvider}
           loadingWalletAddress={loadingWalletAddress}
           setContractTxId={setContractTxId}
-          handleArconnectModalOpen={() => setErrorModalOpen('Please connect to Arconnect.')}
           connectArconnectWallet={connectArconnectWallet}
           connectMetamaskWallet={connectMetamaskWallet}
         ></Main>

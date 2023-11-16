@@ -80,7 +80,6 @@ export const getContractsByOwner = async (props: {
       };
     });
 
-  console.log(contracts);
   return contracts;
 };
 

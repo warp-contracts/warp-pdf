@@ -18,7 +18,6 @@ interface MainProps {
   walletProvider: () => 'metamask' | 'arconnect' | undefined;
   loadingWalletAddress: () => boolean;
   setContractTxId: (value: string) => void;
-  handleArconnectModalOpen: () => void;
   connectArconnectWallet: () => void;
   connectMetamaskWallet: () => void;
 }
@@ -41,12 +40,10 @@ const Main: Component<MainProps> = (props) => {
     let userSigner;
     if (props.walletProvider() == 'metamask') {
       const wallet = new providers.Web3Provider(window.ethereum);
-      console.log(wallet);
       try {
         userSigner = new InjectedEthereumSigner(wallet);
         await userSigner.setPublicKey();
       } catch (e) {
-        console.log(e);
         await props.connectMetamaskWallet();
         userSigner = new InjectedEthereumSigner(wallet);
         await userSigner.setPublicKey();
@@ -88,7 +85,6 @@ const Main: Component<MainProps> = (props) => {
       tags,
     });
 
-    console.log('Contract tx id', contractTxId);
     setLoading(false);
     setFile();
     props.setContractTxId(contractTxId);

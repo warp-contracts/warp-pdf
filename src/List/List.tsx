@@ -16,7 +16,7 @@ const List: ParentComponent<ListProps> = (props) => {
             <th></th>
             <th class='list__header--left'>Name</th>
             <th class='list__header--left'>Submitted</th>
-            <th class='list__header--right'>Link</th>
+            <th class='list__header--right'>Transaction Id</th>
           </tr>
         </thead>
         <tbody class='align-middle'>

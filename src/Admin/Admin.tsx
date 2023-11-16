@@ -90,7 +90,7 @@ const Admin: Component = () => {
 
   const connectArconnectWallet = async () => {
     setContractTxId(null);
-    if (!window.arweaveWallet || !window.arweaveWallet.connect) {
+    if (!window.arweaveWallet) {
       setWalletModalOpen(false);
       handleArconnectModalOpen();
       return;

@@ -52,13 +52,11 @@ const Main: Component<MainProps> = (props) => {
         await userSigner.setPublicKey();
       }
     } else {
-      // if (!window.arweaveWallet) {
-      //   await props.connectArconnectWallet();
-      //   userSigner = new InjectedArweaveSigner(window.arweaveWallet);
-      //   await userSigner.setPublicKey();
-      //   // props.handleArconnectModalOpen();
-      //   // return;
-      // }
+      if (!window.arweaveWallet) {
+        await props.connectArconnectWallet();
+        setLoading(false);
+        return;
+      }
       try {
         userSigner = new InjectedArweaveSigner(window.arweaveWallet);
         await userSigner.setPublicKey();

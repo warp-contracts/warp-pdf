@@ -2,6 +2,10 @@
   &__link {
     text-decoration: none;
     color: #5475fb;
+
+    &:hover {
+      color: #5475fb;
+    }
   }
 
   &__row {

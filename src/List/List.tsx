@@ -25,14 +25,20 @@ const List: ParentComponent<ListProps> = (props) => {
               <tr>
                 <td>{d.i}</td>
                 <td class='list__row--left' data-toggle='tooltip' data-placement='top' title={d.name}>
-                  {d.name && overflowId(d.name, 20)}
+                  <a href={`https://arweave.net/${d.id}`} class='list__link' target='__blank'>
+                    {d.name && overflowId(d.name, 20)}
+                  </a>
                 </td>
                 <td class='list__row--left'>
                   {new Date(Number(d.timestamp)).toLocaleDateString()}{' '}
                   {new Date(Number(d.timestamp)).toLocaleTimeString()}
                 </td>
                 <td class='list__row--right'>
-                  <a href={`https://arweave.net/${d.id}`} class='list__link' target='__blank'>
+                  <a
+                    href={`https://sonar.warp.cc/#/app/contract/${d.id}?network=mainnet`}
+                    class='list__link'
+                    target='__blank'
+                  >
                     {overflowId(d.id, 4)}
                   </a>
                 </td>

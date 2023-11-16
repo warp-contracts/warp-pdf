@@ -35,7 +35,7 @@ const DragNDrop: ParentComponent<DragNDropProps> = (props) => {
           onClick={() => {
             selectFiles(async ([{ file }]) => {
               if (file.size > 500000) {
-                setError(`File size exceeds limit 500000. File size: ${file.size}.`);
+                setError(`File size exceeds limit of 500KB. File size: ${file.size}.`);
                 return;
               } else {
                 setError('');

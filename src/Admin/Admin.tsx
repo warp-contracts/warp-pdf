@@ -72,7 +72,7 @@ const Admin: Component = () => {
   const handleAccountsChanged = async (accounts: any) => {
     setContractTxId(null);
     if (accounts.length === 0) {
-      setErrorModalOpen('Please connect to Metamask.');
+      handleMetamaskModalOpen();
     } else if (accounts[0] !== walletAddress()) {
       setWalletAddress(utils.getAddress(accounts[0]));
       localStorage.setItem(WALLET_PROVIDER, 'metamask');
@@ -82,7 +82,7 @@ const Admin: Component = () => {
 
   const disconnect = () => {
     setContractTxId(null);
-    setWalletAddress('');
+    setWalletAddress(null);
     localStorage.removeItem(WALLET_PROVIDER);
     localStorage.removeItem(ADDRESS_KEY);
     setWalletModalOpen(false);
@@ -90,12 +90,7 @@ const Admin: Component = () => {
 
   const connectArconnectWallet = async () => {
     setContractTxId(null);
-    if (!window.arweaveWallet) {
-      setWalletModalOpen(false);
-      handleArconnectModalOpen();
-      return;
-    }
-    if (!window.arweaveWallet.connect) {
+    if (!window.arweaveWallet || !window.arweaveWallet.connect) {
       setWalletModalOpen(false);
       handleArconnectModalOpen();
       return;

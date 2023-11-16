@@ -46,7 +46,7 @@ const List: ParentComponent<ListProps> = (props) => {
           href='https://sonar.warp.cc/#/app/source/HzBCFeoei50hjdlEq2X0q0X5qdMHNozXaCkNZfHRI1M?network=mainnet'
           target='__blank'
         >
-          under this link
+          here
         </a>
         .
       </div>

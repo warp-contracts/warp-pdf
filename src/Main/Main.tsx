@@ -52,10 +52,13 @@ const Main: Component<MainProps> = (props) => {
         await userSigner.setPublicKey();
       }
     } else {
-      if (!window.arweaveWallet) {
-        props.handleArconnectModalOpen();
-        return;
-      }
+      // if (!window.arweaveWallet) {
+      //   await props.connectArconnectWallet();
+      //   userSigner = new InjectedArweaveSigner(window.arweaveWallet);
+      //   await userSigner.setPublicKey();
+      //   // props.handleArconnectModalOpen();
+      //   // return;
+      // }
       try {
         userSigner = new InjectedArweaveSigner(window.arweaveWallet);
         await userSigner.setPublicKey();
@@ -117,7 +120,7 @@ const Main: Component<MainProps> = (props) => {
                 >
                   <Show
                     when={props.contracts && props.contracts.length > 0}
-                    fallback={<div class='main__list-wrapper__no-info'>No info about pdfs.</div>}
+                    fallback={<div class='main__list-wrapper__no-info'>No info about documents.</div>}
                   >
                     <List data={props.contracts}></List>
                   </Show>

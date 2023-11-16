@@ -34,7 +34,7 @@ const DragNDrop: ParentComponent<DragNDropProps> = (props) => {
           class='drag-n-drop d-flex flex-column justify-content-evenly p-4'
           onClick={() => {
             selectFiles(async ([{ file }]) => {
-              if (file.size > 30000) {
+              if (file.size > 500000) {
                 setError(`File size exceeds limit 500000. File size: ${file.size}.`);
                 return;
               } else {

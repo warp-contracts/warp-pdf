@@ -28,10 +28,19 @@
   th {
     border-bottom: 1px solid #a9a9a9 !important;
   }
+
+  &__more {
+    font-size: 14px;
+    text-align: right;
+
+    a {
+      color: #5475fb;
+    }
+  }
 }
 
 .table-responsive {
   overflow-x: scroll;
-  height: 200px;
-  max-height: 200px;
+  height: 170px;
+  max-height: 170px;
 }

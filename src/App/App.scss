@@ -5,7 +5,7 @@
   position: relative;
 
   .table-responsive {
-    height: calc(100vh - 270px) !important;
+    height: calc(100vh - 330px) !important;
     max-height: none;
   }
 
@@ -16,7 +16,7 @@
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     padding: 1rem;
     position: relative;
-    height: calc(100vh - 270px + 80px) !important;
+    height: calc(100vh - 260px + 80px) !important;
     &__no-info,
     &__loader {
       position: absolute;

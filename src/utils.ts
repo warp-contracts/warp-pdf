@@ -35,7 +35,7 @@ export const getContractsByOwner = async (props: {
   result = (
     await getJsonResponse<ContractsByTag>(
       fetch(
-        `https://gw.warp.cc/gateway/contracts-by-tag?tag={"name":"Application-Name","value":"Warp PDF"}${
+        `https://gw.warp.cc/gateway/contracts-by-tags?tags=[{"name":"Application-Name","values":["Warp PDF"]}]${
           props.walletAddress ? `&owner=${props.walletAddress}` : ''
         }${props.srcTxId ? `&srcId=${props.srcTxId}` : ''}`
       )
@@ -53,7 +53,7 @@ export const getContractsByOwner = async (props: {
           result = (
             await getJsonResponse<ContractsByTag>(
               fetch(
-                `https://gw.warp.cc/gateway/contracts-by-tag?owner=${props.walletAddress}&tag={"name":"Application-Name","value":"Warp PDF"}`
+                `https://gw.warp.cc/gateway/contracts-by-tags?owner=${props.walletAddress}&tags=[{"name":"Application-Name","values":["Warp PDF"]}]`
               )
             )
           ).contracts;
